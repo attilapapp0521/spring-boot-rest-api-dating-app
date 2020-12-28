@@ -1,0 +1,18 @@
+jwt:
+    secret: sprinBootIsNice!
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dating?serverTimezone=UTC&characterEncoding=utf8
+    username: root
+    password: test1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true
+
