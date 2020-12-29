@@ -37,10 +37,9 @@ public class AccountService {
     public void register(RegisterDto registerDto) {
         createRoles();
         Role roleUser = roleRepository.findByName("ROLE_USER");
-        User user = new User();
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRole(roleUser);
+        String encodedPassword = passwordEncoder.encode(registerDto.getPassword());
+        User user = new User(registerDto, encodedPassword, roleUser);
+
         userRepository.save(user);
 
     }
