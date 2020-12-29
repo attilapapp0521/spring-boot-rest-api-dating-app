@@ -39,7 +39,6 @@ public class User {
         this.dateOfBirth = registerDto.getDateOfBirth();
         this.knownAs = registerDto.getKnownAs();
         this.created = LocalDateTime.now();
-        this.lastActive = null; //TODO
         this.gender = registerDto.getGender();
         this.city = registerDto.getCity();
         this.country = registerDto.getCountry();

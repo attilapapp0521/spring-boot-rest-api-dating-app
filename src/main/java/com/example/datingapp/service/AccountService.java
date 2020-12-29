@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -45,7 +46,7 @@ public class AccountService {
     }
 
     public UserDto login(LoginDto loginDto) {
-        createRoles();
+        loggedEntry(loginDto.getUsername());
         User user = userRepository.getUserByUsername(loginDto.getUsername());
         if(user != null && passwordEncoder.matches(loginDto.getPassword(),user.getPassword())){
             String token = jwtProvider.generateToken(loginDto.getUsername());
@@ -53,6 +54,14 @@ public class AccountService {
         }
         return null;
     }
+
+    private void loggedEntry(String username) {
+           User user = userRepository.getUserByUsername(username);
+           if(user != null){
+               user.setLastActive(LocalDateTime.now());
+           }
+    }
+
     private void createRoles(){
         if (roleRepository.findAll().isEmpty()){
             Role roleAdmin = new Role();
