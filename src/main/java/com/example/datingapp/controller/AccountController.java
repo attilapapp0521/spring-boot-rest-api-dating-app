@@ -1,5 +1,6 @@
 package com.example.datingapp.controller;
 
+import com.example.datingapp.dto.LoginDto;
 import com.example.datingapp.dto.RegisterDto;
 import com.example.datingapp.dto.UserDto;
 import com.example.datingapp.service.AccountService;
@@ -22,11 +23,21 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody RegisterDto registerDto){
+    public ResponseEntity<Void> register(@RequestBody RegisterDto registerDto){
         if(userExists(registerDto.getUsername()))
             return new ResponseEntity("Username is taken",HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(accountService.register(registerDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto){
+        UserDto userDto = accountService.login(loginDto);
+        if(userDto == null) return new ResponseEntity("Invalid username or password",HttpStatus.UNAUTHORIZED);
+
+            return new ResponseEntity<>(userDto, HttpStatus.OK);
+
+
     }
 
     private boolean userExists(String username) {
