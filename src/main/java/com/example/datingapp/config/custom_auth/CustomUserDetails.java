@@ -2,25 +2,32 @@ package com.example.datingapp.config.custom_auth;
 
 import com.example.datingapp.domain.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
     private String username;
     private String password;
+    private Collection<? extends GrantedAuthority> grantedAuthorities;
 
     public static CustomUserDetails fromUserToCustomUserDetails(User user){
-        CustomUserDetails customUserDetails = new CustomUserDetails();
-        customUserDetails.username = user.getUsername();
-        customUserDetails.password = user.getPassword();
+        if(user != null){
+            CustomUserDetails customUserDetails = new CustomUserDetails();
+            customUserDetails.username = user.getUsername();
+            customUserDetails.password = user.getPassword();
+            customUserDetails.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
+            return customUserDetails;
+        }
 
-        return customUserDetails;
+        return null;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.grantedAuthorities;
     }
 
     @Override

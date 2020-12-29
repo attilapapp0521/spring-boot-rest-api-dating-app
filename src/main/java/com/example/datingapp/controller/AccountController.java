@@ -23,25 +23,26 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterDto registerDto){
-        if(userExists(registerDto.getUsername()))
-            return new ResponseEntity("Username is taken",HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Void> register(@RequestBody RegisterDto registerDto) {
+        if (userExists(registerDto.getUsername()))
+            return new ResponseEntity("Username is taken", HttpStatus.BAD_REQUEST);
+
+        accountService.register(registerDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto) {
         UserDto userDto = accountService.login(loginDto);
-        if(userDto == null) return new ResponseEntity("Invalid username or password",HttpStatus.UNAUTHORIZED);
+        if (userDto == null) return new ResponseEntity(
+                "Invalid username or password", HttpStatus.UNAUTHORIZED);
 
-            return new ResponseEntity<>(userDto, HttpStatus.OK);
-
-
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     private boolean userExists(String username) {
-       return accountService.userExists(username);
+        return accountService.userExists(username);
     }
 
 

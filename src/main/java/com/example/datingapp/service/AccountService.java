@@ -1,10 +1,12 @@
 package com.example.datingapp.service;
 
+import com.example.datingapp.domain.Role;
 import com.example.datingapp.domain.User;
 import com.example.datingapp.dto.LoginDto;
 import com.example.datingapp.dto.RegisterDto;
 import com.example.datingapp.dto.UserDto;
 import com.example.datingapp.jwt.JwtProvider;
+import com.example.datingapp.repository.RoleRepository;
 import com.example.datingapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,12 +20,14 @@ public class AccountService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private JwtProvider jwtProvider;
+    private RoleRepository roleRepository;
 
     @Autowired
-    public AccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.roleRepository = roleRepository;
     }
 
     public boolean userExists(String username) {
@@ -31,20 +35,34 @@ public class AccountService {
     }
 
     public void register(RegisterDto registerDto) {
-
-        User user = new User(registerDto.getUsername(),
-                passwordEncoder.encode(registerDto.getPassword()));
+        createRoles();
+        Role roleUser = roleRepository.findByName("ROLE_USER");
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setRole(roleUser);
         userRepository.save(user);
 
     }
 
     public UserDto login(LoginDto loginDto) {
+        createRoles();
         User user = userRepository.getUserByUsername(loginDto.getUsername());
-
         if(user != null && passwordEncoder.matches(loginDto.getPassword(),user.getPassword())){
             String token = jwtProvider.generateToken(loginDto.getUsername());
             return new UserDto(user,token);
         }
         return null;
+    }
+    private void createRoles(){
+        if (roleRepository.findAll().isEmpty()){
+            Role roleAdmin = new Role();
+            roleAdmin.setName("ROLE_ADMIN");
+            roleRepository.save(roleAdmin);
+
+            Role roleUser = new Role();
+            roleUser.setName("ROLE_USER");
+            roleRepository.save(roleUser);
+        }
     }
 }
