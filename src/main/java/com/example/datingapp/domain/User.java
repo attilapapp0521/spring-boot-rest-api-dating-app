@@ -24,7 +24,7 @@ public class User {
     private String gender;
     private String introduction;
     private String lookingFor;
-    private String interest;
+    private String interests;
     private String city;
     private String country;
     @OneToMany(mappedBy = "user")
@@ -133,12 +133,12 @@ public class User {
         this.lookingFor = lookingFor;
     }
 
-    public String getInterest() {
-        return interest;
+    public String getInterests() {
+        return interests;
     }
 
-    public void setInterest(String interest) {
-        this.interest = interest;
+    public void setInterests(String interest) {
+        this.interests = interest;
     }
 
     public String getCity() {

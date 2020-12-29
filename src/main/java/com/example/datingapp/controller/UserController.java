@@ -1,14 +1,12 @@
 package com.example.datingapp.controller;
 
 import com.example.datingapp.dto.MemberDto;
+import com.example.datingapp.dto.MemberUpdateDto;
 import com.example.datingapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,4 +33,9 @@ public class UserController {
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 
+    @PutMapping
+    public ResponseEntity<Void> updateUser(@RequestBody MemberUpdateDto memberUpdateDto) {
+        userService.updateUser(memberUpdateDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
