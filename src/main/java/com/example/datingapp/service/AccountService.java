@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 @Service
 @Transactional
 public class AccountService {
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtProvider jwtProvider;
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public AccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, RoleRepository roleRepository) {
@@ -48,22 +48,22 @@ public class AccountService {
     public UserDto login(LoginDto loginDto) {
         loggedEntry(loginDto.getUsername());
         User user = userRepository.getUserByUsername(loginDto.getUsername());
-        if(user != null && passwordEncoder.matches(loginDto.getPassword(),user.getPassword())){
+        if (user != null && passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             String token = jwtProvider.generateToken(loginDto.getUsername());
-            return new UserDto(user,token);
+            return new UserDto(user, token);
         }
         return null;
     }
 
     private void loggedEntry(String username) {
-           User user = userRepository.getUserByUsername(username);
-           if(user != null){
-               user.setLastActive(LocalDateTime.now());
-           }
+        User user = userRepository.getUserByUsername(username);
+        if (user != null) {
+            user.setLastActive(LocalDateTime.now());
+        }
     }
 
-    private void createRoles(){
-        if (roleRepository.findAll().isEmpty()){
+    private void createRoles() {
+        if (roleRepository.findAll().isEmpty()) {
             Role roleAdmin = new Role();
             roleAdmin.setName("ROLE_ADMIN");
             roleRepository.save(roleAdmin);

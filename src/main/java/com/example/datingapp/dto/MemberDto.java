@@ -3,7 +3,6 @@ package com.example.datingapp.dto;
 import com.example.datingapp.domain.User;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class MemberDto {
@@ -23,12 +22,9 @@ public class MemberDto {
     private List<PhotoDto> photos;
 
 
-
     public MemberDto(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.photoUrl = null;  //TODO
-        this.age = null;  //TODO
         this.knownAs = user.getKnownAs();
         this.created = user.getCreated();
         this.lastActive = user.getLastActive();
@@ -38,8 +34,6 @@ public class MemberDto {
         this.interests = user.getInterests();
         this.city = user.getCity();
         this.country = user.getCountry();
-        this.photos = null; //TODO
-
     }
 
     public String getUsername() {

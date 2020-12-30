@@ -19,28 +19,28 @@ public class JwtProvider {
     private String secretKey;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
         Date date = Date.from(LocalDate.now().
                 plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());
-       return Jwts.builder()
+        return Jwts.builder()
                 .setSubject(username)
                 .setExpiration(date)
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
         return false;
     }
 
-    public String getUsernameFromToken(String token){
+    public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        return  claims.getSubject();
+        return claims.getSubject();
     }
 }
