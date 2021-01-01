@@ -8,9 +8,21 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
-    private Boolean IsMain;
+    private Boolean isMain;
+    private String publicId;
     @ManyToOne
     private User user;
+
+    public Photo() {
+    }
+
+    public Photo(String url, String publicId, User user) {
+        this.url = url;
+        this.publicId = publicId;
+        this.user = user;
+        this.isMain = false;
+    }
+
 
     public Long getId() {
         return id;
@@ -29,11 +41,19 @@ public class Photo {
     }
 
     public Boolean getMain() {
-        return IsMain;
+        return isMain;
     }
 
     public void setMain(Boolean main) {
-        IsMain = main;
+        isMain = main;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 
     public User getUser() {

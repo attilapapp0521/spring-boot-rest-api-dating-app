@@ -1,5 +1,6 @@
 jwt:
     secret: springBootIsNice!
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/dating?serverTimezone=UTC&characterEncoding=utf8
@@ -15,4 +16,19 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
+
+logging:
+  level:
+    root: info
+    com.example: debug
+    org.springframework.web: info
+    org.springframework.security.web: info
+    org.hibernate: error
+
+cloud.cloud_name:
+cloud.api_key:
+cloud.api_secret:
+
+cors-policies: https://localhost:4200, https://127.0.0.1:4200, http://localhost:8080, http://127.0.0.1:8080
+registration-verify-url: https://localhost:4200, http://localhost:8080
 
