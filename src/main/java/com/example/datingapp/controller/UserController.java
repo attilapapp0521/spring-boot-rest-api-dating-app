@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,7 +35,7 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<MemberDto> getUser(@PathVariable String username) {
         MemberDto memberDto = userService.getUser(username);
-        if (memberDto == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (memberDto == null) return new ResponseEntity<>(NOT_FOUND);
 
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
@@ -49,7 +51,17 @@ public class UserController {
        PhotoDto photoDto = userService.addPhoto(multipartFile);
        logger.info("Attempting to upload new image to cloudinary");
        if(photoDto == null) return new  ResponseEntity("The photoDto is null, everything is wrong!",HttpStatus.BAD_REQUEST);
-       return new ResponseEntity<>(photoDto, HttpStatus.CREATED);
+       return new ResponseEntity<>(photoDto, CREATED);
+    }
+
+    @PutMapping("/set-main-photo/{photoId}")
+    public ResponseEntity<Void> setMainPhoto(@PathVariable Long photoId){
+          return userService.setMainPhoto(photoId);
+    }
+
+    @DeleteMapping("/delete-photo/{photoId}")
+    public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId){
+       return userService.deletePhoto(photoId);
     }
 
 }

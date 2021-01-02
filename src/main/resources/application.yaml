@@ -25,9 +25,9 @@ logging:
     org.springframework.security.web: info
     org.hibernate: error
 
-cloud.cloud_name:
-cloud.api_key:
-cloud.api_secret:
+cloud.cloud_name: dmxkefqwd
+cloud.api_key: 792287434583112
+cloud.api_secret: czmyqBqh-0s0QZrF6E5agBitbJY
 
 cors-policies: https://localhost:4200, https://127.0.0.1:4200, http://localhost:8080, http://127.0.0.1:8080
 registration-verify-url: https://localhost:4200, http://localhost:8080
