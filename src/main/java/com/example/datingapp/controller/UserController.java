@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -29,38 +30,55 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<MemberDto>> getUsers() {
+        logger.debug("Users reading of database");
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<MemberDto> getUser(@PathVariable String username) {
+        logger.debug("User reading of database...");
         MemberDto memberDto = userService.getUser(username);
-        if (memberDto == null) return new ResponseEntity<>(NOT_FOUND);
-
+        if (memberDto == null){
+            return new ResponseEntity<>(NOT_FOUND);
+        }
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateUser(@RequestBody MemberUpdateDto memberUpdateDto) {
+    public ResponseEntity<Void> updateUser(@Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        logger.debug("User updating...");
         userService.updateUser(memberUpdateDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/add-photo")
     public ResponseEntity<PhotoDto> addPhoto(@RequestParam("file") MultipartFile multipartFile){
+        logger.debug("Photo adding of database and cloud...");
        PhotoDto photoDto = userService.addPhoto(multipartFile);
-       logger.info("Attempting to upload new image to cloudinary");
-       if(photoDto == null) return new  ResponseEntity("The photoDto is null, everything is wrong!",HttpStatus.BAD_REQUEST);
+       if(photoDto == null) {
+           logger.warn("Photo has not added");
+           return new  ResponseEntity(HttpStatus.BAD_REQUEST);
+       }
+       logger.debug("Photo has added");
        return new ResponseEntity<>(photoDto, CREATED);
     }
 
     @PutMapping("/set-main-photo/{photoId}")
-    public ResponseEntity<Void> setMainPhoto(@PathVariable Long photoId){
-          return userService.setMainPhoto(photoId);
+    public ResponseEntity<Void> setMainPhoto( @PathVariable Long photoId){
+        logger.debug("Main photo settings... ");
+         Boolean isDone = userService.setMainPhoto(photoId);
+         if(isDone == null){
+            return new ResponseEntity<>(NOT_FOUND);
+         }else if(!isDone){
+             return new ResponseEntity("This is already your main photo",BAD_REQUEST);
+         }
+
+         return new ResponseEntity<>(NO_CONTENT);
     }
 
     @DeleteMapping("/delete-photo/{photoId}")
     public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId){
+        logger.debug("Photo deleting of database and cloud... ");
        return userService.deletePhoto(photoId);
     }
 

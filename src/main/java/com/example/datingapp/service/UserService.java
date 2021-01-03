@@ -9,10 +9,10 @@ import com.example.datingapp.dto.MemberUpdateDto;
 import com.example.datingapp.dto.PhotoDto;
 import com.example.datingapp.repository.PhotoRepository;
 import com.example.datingapp.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +35,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
     private final PhotoRepository photoRepository;
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @Autowired
@@ -45,11 +46,16 @@ public class UserService {
     }
 
     public User findUserByUsername(String username) {
-        return userRepository.getUserByUsername(username);
+        User user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            logger.warn("User was not found.");
+        }
+        return user;
     }
 
     public List<MemberDto> getUsers() {
         List<User> users = userRepository.findAll();
+
         List<MemberDto> memberDtoList = new ArrayList<>();
 
         for (User user : users) {
@@ -57,7 +63,6 @@ public class UserService {
             memberDto.setAge(calculateAge(user.getDateOfBirth()));
             memberDtoList.add(getPhotos(memberDto, user));
         }
-
         return memberDtoList;
     }
 
@@ -66,6 +71,7 @@ public class UserService {
         if (user != null) {
             MemberDto memberDto = new MemberDto(user);
             memberDto.setAge(calculateAge(user.getDateOfBirth()));
+            logger.debug("User was found");
             return getPhotos(memberDto, user);
         }
 
@@ -73,9 +79,13 @@ public class UserService {
     }
 
     private int calculateAge(LocalDateTime dateOfBirth) {
-        LocalDate today = LocalDate.now();
-        int age = today.getYear() - dateOfBirth.getYear();
-        if (dateOfBirth.toLocalDate().isAfter(today.minusYears(age))) age--;
+        int age = 0;
+        if(dateOfBirth != null){
+            LocalDate today = LocalDate.now();
+             age = today.getYear() - dateOfBirth.getYear();
+            if (dateOfBirth.toLocalDate().isAfter(today.minusYears(age))) age--;      
+        }
+      
 
         return age;
     }
@@ -85,7 +95,7 @@ public class UserService {
         String mainPhotoUrl = "";
         for (Photo photo : user.getPhotos()) {
             PhotoDto photoDto = new PhotoDto(photo);
-            if (photo.getMain() != null && photo.getMain()) {
+            if (photo.getMain()) {
                 mainPhotoUrl = photo.getUrl();
             }
             photoDtoList.add(photoDto);
@@ -99,14 +109,14 @@ public class UserService {
     public void updateUser(MemberUpdateDto memberUpdateDto) {
 
         String username = getAuthenticatedUserName();
-        User overwroteUser = updateValues(memberUpdateDto,
+        User overwriteUser = updateValues(memberUpdateDto,
                 userRepository.getUserByUsername(username));
-
-        userRepository.save(overwroteUser);
+        logger.debug("User has updated");
+        userRepository.save(overwriteUser);
     }
 
-    public String getAuthenticatedUserName(){
-        return  SecurityContextHolder.getContext().getAuthentication().getName();
+    public String getAuthenticatedUserName() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private User updateValues(MemberUpdateDto memberUpdateDto, User user) {
@@ -128,10 +138,10 @@ public class UserService {
             result[1] = (String) uploadResult.get("url");
             User user = findUserByUsername(getAuthenticatedUserName());
             Photo photo = new Photo(result[1], result[0], user);
-            if(user.getPhotos().isEmpty()){
+            if (user.getPhotos().isEmpty()) {
                 photo.setMain(true);
             }
-           return new PhotoDto(photoRepository.save(photo));
+            return new PhotoDto(photoRepository.save(photo));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,16 +149,18 @@ public class UserService {
         return null;
     }
 
-    public ResponseEntity<Void> setMainPhoto(Long photoId) {
-        Photo photo = photoRepository.findById(photoId).
-                orElseThrow(() ->
-                        new EntityNotFoundException("" + photoId));
+    public Boolean setMainPhoto(Long photoId) {
+        Photo photo = photoRepository.getById(photoId);
+        if(photo == null){
+            logger.warn("Failed: photo was not found");
+            return null;
+        }
         User user = photo.getUser();
-        for(Photo newPhoto: user.getPhotos()){
-            if(newPhoto.getMain()){
-                if(newPhoto.getId().equals(photoId)){
-                    return new ResponseEntity("This is already your main photo",
-                            BAD_REQUEST);
+        for (Photo newPhoto : user.getPhotos()) {
+            if (newPhoto.getMain()) {
+                if (newPhoto.getId().equals(photoId)) {
+                    logger.warn("Failed: This is the main photo");
+                    return false;
                 }
                 newPhoto.setMain(false);
                 photo.setMain(true);
@@ -156,21 +168,32 @@ public class UserService {
             }
         }
         userRepository.save(user);
-       return new ResponseEntity<>(NO_CONTENT);
+        logger.debug("Main photo is set");
+        return true;
     }
 
     public ResponseEntity<Void> deletePhoto(Long photoId) {
-            Photo photo = photoRepository.findById(photoId)
-                    .orElseThrow(() ->
-                            new EntityNotFoundException("" + photoId));
-            if(photo.getMain()) return new ResponseEntity("You cannot delete your main photo",
+        Photo photo = photoRepository.getById(photoId);
+
+        if(photo == null){
+            logger.warn("Failed: not found photo");
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
+        else if( photo.getMain()) {
+            logger.warn("Failed: main photo deleting");
+            return new ResponseEntity("You cannot delete your main photo",
                     BAD_REQUEST);
+        }
         try {
-            cloudinary.uploader().deleteByToken(photo.getPublicId());
+
+            cloudinary.uploader().destroy(photo.getPublicId(), ObjectUtils.emptyMap() );
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(BAD_REQUEST);
         }
         photoRepository.delete(photo);
+        logger.debug("Photo has deleted");
         return new ResponseEntity<>(OK);
     }
 }

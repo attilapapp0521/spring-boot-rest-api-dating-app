@@ -1,7 +1,6 @@
 package com.example.datingapp.domain;
 
 import com.example.datingapp.dto.RegisterDto;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
