@@ -7,14 +7,13 @@ import com.example.datingapp.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.Valid;
-import java.util.List;
-
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
@@ -29,9 +28,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberDto>> getUsers() {
+    public ResponseEntity<Page<MemberDto>> getUsers(Pageable pageable) {
         logger.debug("Users reading of database");
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUsers(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
@@ -41,14 +40,14 @@ public class UserController {
         if (memberDto == null){
             return new ResponseEntity<>(NOT_FOUND);
         }
-        return new ResponseEntity<>(memberDto, HttpStatus.OK);
+        return new ResponseEntity<>(memberDto, OK);
     }
 
     @PutMapping
     public ResponseEntity<Void> updateUser(@Valid @RequestBody MemberUpdateDto memberUpdateDto) {
         logger.debug("User updating...");
         userService.updateUser(memberUpdateDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(OK);
     }
 
     @PostMapping("/add-photo")
@@ -57,7 +56,7 @@ public class UserController {
        PhotoDto photoDto = userService.addPhoto(multipartFile);
        if(photoDto == null) {
            logger.warn("Photo has not added");
-           return new  ResponseEntity(HttpStatus.BAD_REQUEST);
+           return new  ResponseEntity(BAD_REQUEST);
        }
        logger.debug("Photo has added");
        return new ResponseEntity<>(photoDto, CREATED);

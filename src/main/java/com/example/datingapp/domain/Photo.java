@@ -1,5 +1,7 @@
 package com.example.datingapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class Photo {
     private Boolean isMain;
     private String publicId;
     @ManyToOne
+    @JsonIgnoreProperties("photo")
     private User user;
 
     public Photo() {

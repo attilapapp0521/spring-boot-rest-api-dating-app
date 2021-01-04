@@ -2,7 +2,6 @@ package com.example.datingapp.dto;
 
 import com.example.datingapp.domain.User;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 

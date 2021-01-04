@@ -13,7 +13,6 @@ public class UserDto {
     public UserDto(User user, String token) {
         this.username = user.getUsername();
         this.token = token;
-        this.photoUrl = null; //TODO
         this.knownAs = user.getKnownAs();
         this.gender = user.getGender();
     }

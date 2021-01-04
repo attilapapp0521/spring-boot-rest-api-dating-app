@@ -1,6 +1,8 @@
 package com.example.datingapp.domain;
 
 import com.example.datingapp.dto.RegisterDto;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +29,7 @@ public class User {
     private String city;
     private String country;
     @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties("user")
     private List<Photo> photos;
 
     public User() {

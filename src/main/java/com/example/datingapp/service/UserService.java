@@ -12,12 +12,14 @@ import com.example.datingapp.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
+
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,21 +55,17 @@ public class UserService {
         return user;
     }
 
-    public List<MemberDto> getUsers() {
-        List<User> users = userRepository.findAll();
-
-        List<MemberDto> memberDtoList = new ArrayList<>();
-
-        for (User user : users) {
-            MemberDto memberDto = new MemberDto(user);
-            memberDto.setAge(calculateAge(user.getDateOfBirth()));
-            memberDtoList.add(getPhotos(memberDto, user));
-        }
-        return memberDtoList;
+    public Page<MemberDto> getUsers(Pageable pageable) {
+       return userRepository.findAll(pageable)
+               .map(this::getMemberDto);
     }
 
     public MemberDto getUser(String username) {
         User user = findUserByUsername(username);
+        return getMemberDto(user);
+    }
+
+    public MemberDto getMemberDto(User user) {
         if (user != null) {
             MemberDto memberDto = new MemberDto(user);
             memberDto.setAge(calculateAge(user.getDateOfBirth()));
@@ -80,12 +78,12 @@ public class UserService {
 
     private int calculateAge(LocalDateTime dateOfBirth) {
         int age = 0;
-        if(dateOfBirth != null){
+        if (dateOfBirth != null) {
             LocalDate today = LocalDate.now();
-             age = today.getYear() - dateOfBirth.getYear();
-            if (dateOfBirth.toLocalDate().isAfter(today.minusYears(age))) age--;      
+            age = today.getYear() - dateOfBirth.getYear();
+            if (dateOfBirth.toLocalDate().isAfter(today.minusYears(age))) age--;
         }
-      
+
 
         return age;
     }
@@ -151,7 +149,7 @@ public class UserService {
 
     public Boolean setMainPhoto(Long photoId) {
         Photo photo = photoRepository.getById(photoId);
-        if(photo == null){
+        if (photo == null) {
             logger.warn("Failed: photo was not found");
             return null;
         }
@@ -175,19 +173,17 @@ public class UserService {
     public ResponseEntity<Void> deletePhoto(Long photoId) {
         Photo photo = photoRepository.getById(photoId);
 
-        if(photo == null){
+        if (photo == null) {
             logger.warn("Failed: not found photo");
             return new ResponseEntity<>(NOT_FOUND);
-        }
-
-        else if( photo.getMain()) {
+        } else if (photo.getMain()) {
             logger.warn("Failed: main photo deleting");
             return new ResponseEntity("You cannot delete your main photo",
                     BAD_REQUEST);
         }
         try {
 
-            cloudinary.uploader().destroy(photo.getPublicId(), ObjectUtils.emptyMap() );
+            cloudinary.uploader().destroy(photo.getPublicId(), ObjectUtils.emptyMap());
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(BAD_REQUEST);
