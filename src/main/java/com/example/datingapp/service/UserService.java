@@ -37,7 +37,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
     private final PhotoRepository photoRepository;
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @Autowired

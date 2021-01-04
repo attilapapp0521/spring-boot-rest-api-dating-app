@@ -17,7 +17,7 @@ public class JwtProvider {
 
     @Value("$(jwt.secret)")
     private String secretKey;
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public String generateToken(String username) {
         Date date = Date.from(LocalDate.now().

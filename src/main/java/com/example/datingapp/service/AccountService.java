@@ -24,7 +24,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RoleRepository roleRepository;
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public AccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, RoleRepository roleRepository) {

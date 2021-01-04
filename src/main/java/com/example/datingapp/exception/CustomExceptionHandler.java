@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class CustomExceptionHandler {
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleException(BindException ex) {
 
