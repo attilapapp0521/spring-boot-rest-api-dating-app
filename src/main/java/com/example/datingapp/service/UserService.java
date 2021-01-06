@@ -7,6 +7,7 @@ import com.example.datingapp.domain.User;
 import com.example.datingapp.dto.MemberDto;
 import com.example.datingapp.dto.MemberUpdateDto;
 import com.example.datingapp.dto.PhotoDto;
+import com.example.datingapp.helpers.UserParams;
 import com.example.datingapp.repository.PhotoRepository;
 import com.example.datingapp.repository.UserRepository;
 import org.slf4j.Logger;
@@ -18,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -55,9 +55,20 @@ public class UserService {
         return user;
     }
 
-    public Page<MemberDto> getUsers(Pageable pageable) {
-       return userRepository.findAll(pageable)
-               .map(this::getMemberDto);
+    public Page<MemberDto> getUsers(UserParams userParams, Pageable pageable) {
+        User user = findUserByUsername(getAuthenticatedUserName());
+        userParams.setCurrentUserName(user.getUsername());
+
+        if (userParams.getGender() == null) {
+            userParams.setGender(user.getGender().equals("male") ? "female" : "male");
+        }
+
+        LocalDateTime minDob = LocalDateTime.now().minusYears(userParams.getMaxAga()-1);
+        LocalDateTime maxDob = LocalDateTime.now().minusYears(userParams.getMinAge());
+
+             return userRepository.findAllUserByCreated(userParams.getGender(),minDob,
+                    maxDob, userParams.getCurrentUserName(),userParams.getOrderBy(),
+                    pageable).map(this::getMemberDto);
     }
 
     public MemberDto getUser(String username) {
@@ -192,4 +203,6 @@ public class UserService {
         logger.debug("Photo has deleted");
         return new ResponseEntity<>(OK);
     }
+
+
 }

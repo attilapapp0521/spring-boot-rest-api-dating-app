@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
 
 
 @Repository
@@ -15,7 +16,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.username = :username")
     User getUserByUsername(@Param("username") String username);
 
-    @Override
-    Page<User> findAll(Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.username <> :name " +
+            "AND u.gender = :gender AND u.dateOfBirth >= :minDob " +
+            "AND u.dateOfBirth <= :maxDob " +
+            "ORDER BY " +
+            "   CASE " +
+            "       WHEN :orderBy = 'created' THEN u.created" +
+            "       ELSE u.lastActive " +
+            "END DESC ")
+    Page<User> findAllUserByCreated(@Param("gender") String gender,
+                           @Param("minDob") LocalDateTime minDob,
+                           @Param("maxDob") LocalDateTime maxDob,
+                           @Param("name") String name,
+                           @Param("orderBy") String orderBy,
+                           Pageable pageable);
+
 
 }

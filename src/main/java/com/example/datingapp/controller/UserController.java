@@ -3,17 +3,22 @@ package com.example.datingapp.controller;
 import com.example.datingapp.dto.MemberDto;
 import com.example.datingapp.dto.MemberUpdateDto;
 import com.example.datingapp.dto.PhotoDto;
+import com.example.datingapp.extension.HttpExtension;
+import com.example.datingapp.helpers.UserParams;
 import com.example.datingapp.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
+import java.util.List;
+
+
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
@@ -28,9 +33,16 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<MemberDto>> getUsers(Pageable pageable) {
+    public ResponseEntity<List<MemberDto>> getUsers( UserParams userParams,
+                                                     Pageable pageable) {
         logger.debug("Users reading of database");
-        return new ResponseEntity<>(userService.getUsers(pageable), HttpStatus.OK);
+        Page<MemberDto> users = userService.getUsers(userParams, pageable);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        HttpExtension.addPaginationHeader(responseHeaders,users.getNumber(),
+                users.getNumberOfElements(),users.getTotalElements(),
+                users.getTotalPages());
+
+        return ResponseEntity.ok().headers(responseHeaders).body(users.getContent());
     }
 
     @GetMapping("/{username}")
@@ -40,6 +52,7 @@ public class UserController {
         if (memberDto == null){
             return new ResponseEntity<>(NOT_FOUND);
         }
+
         return new ResponseEntity<>(memberDto, OK);
     }
 
@@ -80,5 +93,7 @@ public class UserController {
         logger.debug("Photo deleting of database and cloud... ");
        return userService.deletePhoto(photoId);
     }
+
+
 
 }
