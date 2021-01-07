@@ -5,7 +5,7 @@ public class UserParams {
     private String currentUserName;
     private String gender;
     private int minAge = 18;
-    private int maxAga = 99;
+    private int maxAge = 99;
     private String orderBy;
 
 
@@ -34,12 +34,12 @@ public class UserParams {
         this.minAge = minAge;
     }
 
-    public int getMaxAga() {
-        return maxAga;
+    public int getMaxAge() {
+        return maxAge;
     }
 
-    public void setMaxAga(int maxAga) {
-        this.maxAga = maxAga;
+    public void setMaxAge(int maxAga) {
+        this.maxAge = maxAga;
     }
 
     public String getOrderBy() {

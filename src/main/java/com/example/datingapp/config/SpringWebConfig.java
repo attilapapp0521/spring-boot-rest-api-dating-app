@@ -21,13 +21,11 @@ public class SpringWebConfig implements WebMvcConfigurer {
         return messageSource;
     }
 
-    @Value("${cors-policies}")
-    private String[] corsPolicies;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(corsPolicies)
-                .allowedMethods("GET", "POST", "DELETE", "PUT");
+                .allowedOrigins("https://localhost:4200","http://localhost:8080")
+                .allowedMethods("GET", "POST", "DELETE", "PUT" );
     }
 }

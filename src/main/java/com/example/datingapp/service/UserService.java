@@ -63,7 +63,7 @@ public class UserService {
             userParams.setGender(user.getGender().equals("male") ? "female" : "male");
         }
 
-        LocalDateTime minDob = LocalDateTime.now().minusYears(userParams.getMaxAga()-1);
+        LocalDateTime minDob = LocalDateTime.now().minusYears(userParams.getMaxAge()+1);
         LocalDateTime maxDob = LocalDateTime.now().minusYears(userParams.getMinAge());
 
              return userRepository.findAllUserByCreated(userParams.getGender(),minDob,
