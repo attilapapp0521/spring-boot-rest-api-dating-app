@@ -42,7 +42,7 @@ public class UserController {
                 users.getNumberOfElements(),users.getTotalElements(),
                 users.getTotalPages());
 
-        return ResponseEntity.status(OK).headers(responseHeaders).body(users.getContent());
+        return ResponseEntity.ok().headers(responseHeaders).body(users.getContent());
     }
 
     @GetMapping("/{username}")
