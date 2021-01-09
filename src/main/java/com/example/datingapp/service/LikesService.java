@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
+
 import static org.springframework.http.HttpStatus.*;
 
 @Service
@@ -35,7 +37,7 @@ public class LikesService {
             return new ResponseEntity<>(NOT_FOUND);
         } else if (sourceUser.getUsername().equals(username)) {
             return new ResponseEntity("You cannot like yourself", BAD_REQUEST);
-        } else if (getUserLikes(sourceUser, likedUser)) {
+        } else if (isLiked(sourceUser, likedUser)) {
             return new ResponseEntity("You already like this user", BAD_REQUEST);
         }
 
@@ -44,7 +46,7 @@ public class LikesService {
         return new ResponseEntity<>(CREATED);
     }
 
-    public boolean getUserLikes(User sourceUser, User likedUser) {
+    public boolean isLiked(User sourceUser, User likedUser) {
 
         UserLike userLike = likesRepository.
                 isLikedUser(sourceUser.getId(), likedUser.getId());
@@ -53,13 +55,13 @@ public class LikesService {
 
     public Page<LikeDto> getUsersLikes(String predicate, Pageable pageable) {
         User user = userService.findUserByUsername(userService.getAuthenticatedUserName());
-        logger.error(predicate);
-        if(predicate.equals("liked")){
+
+        if (predicate.equals("liked")) {
             return likesRepository.getUserLikes(user.getUsername(), pageable)
                     .map(this::getLikeDto);
         }
-            return likesRepository.getUserLikesBy(user.getUsername(), pageable)
-                    .map(this::getLikeDto);
+        return likesRepository.getUserLikesBy(user.getUsername(), pageable)
+                .map(this::getLikeDto);
     }
 
     private LikeDto getLikeDto(User user) {
