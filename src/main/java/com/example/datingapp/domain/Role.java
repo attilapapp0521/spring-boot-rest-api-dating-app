@@ -9,8 +9,8 @@ import javax.persistence.Id;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 
     public Long getId() {
         return id;

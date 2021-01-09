@@ -31,6 +31,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
     private List<Photo> photos;
+    @OneToMany(mappedBy = "sourceUser", cascade = CascadeType.ALL)
+    private List<UserLike> sourceUser;
+    @OneToMany(mappedBy = "likedUser", cascade = CascadeType.ALL)
+    private List<UserLike> likedUser;
 
     public User() {
     }
@@ -165,5 +169,21 @@ public class User {
 
     public void setPhotos(List<Photo> photos) {
         this.photos = photos;
+    }
+
+    public List<UserLike> getSourceUser() {
+        return sourceUser;
+    }
+
+    public void setSourceUser(List<UserLike> sourceUser) {
+        this.sourceUser = sourceUser;
+    }
+
+    public List<UserLike> getLikedUser() {
+        return likedUser;
+    }
+
+    public void setLikedUser(List<UserLike> likedUser) {
+        this.likedUser = likedUser;
     }
 }

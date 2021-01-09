@@ -1,6 +1,7 @@
 package com.example.datingapp.repository;
 
 import com.example.datingapp.domain.User;
+import com.example.datingapp.dto.MemberDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,12 +25,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "       WHEN :orderBy = 'created' THEN u.created" +
             "       ELSE u.lastActive " +
             "END DESC ")
-    Page<User> findAllUserByCreated(@Param("gender") String gender,
+    Page<User> findAllUser(@Param("gender") String gender,
                            @Param("minDob") LocalDateTime minDob,
                            @Param("maxDob") LocalDateTime maxDob,
                            @Param("name") String name,
                            @Param("orderBy") String orderBy,
                            Pageable pageable);
-
-
 }

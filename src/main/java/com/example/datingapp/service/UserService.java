@@ -7,6 +7,7 @@ import com.example.datingapp.domain.User;
 import com.example.datingapp.dto.MemberDto;
 import com.example.datingapp.dto.MemberUpdateDto;
 import com.example.datingapp.dto.PhotoDto;
+import com.example.datingapp.helpers.Pair;
 import com.example.datingapp.helpers.UserParams;
 import com.example.datingapp.repository.PhotoRepository;
 import com.example.datingapp.repository.UserRepository;
@@ -26,9 +27,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-
 import static org.springframework.http.HttpStatus.*;
+
 
 
 @Service
@@ -66,7 +66,7 @@ public class UserService {
         LocalDateTime minDob = LocalDateTime.now().minusYears(userParams.getMaxAge()+1);
         LocalDateTime maxDob = LocalDateTime.now().minusYears(userParams.getMinAge());
 
-             return userRepository.findAllUserByCreated(userParams.getGender(),minDob,
+             return userRepository.findAllUser(userParams.getGender(),minDob,
                     maxDob, userParams.getCurrentUserName(),userParams.getOrderBy(),
                     pageable).map(this::getMemberDto);
     }
@@ -81,13 +81,16 @@ public class UserService {
             MemberDto memberDto = new MemberDto(user);
             memberDto.setAge(calculateAge(user.getDateOfBirth()));
             logger.debug("User was found");
-            return getPhotos(memberDto, user);
+            Pair<List<PhotoDto>,String> photos = getPhotos(user);
+            memberDto.setPhotos((List<PhotoDto>) photos.getFirst());
+            memberDto.setPhotoUrl((String) photos.getSecond());
+            return memberDto;
         }
 
         return null;
     }
 
-    private int calculateAge(LocalDateTime dateOfBirth) {
+    public int calculateAge(LocalDateTime dateOfBirth) {
         int age = 0;
         if (dateOfBirth != null) {
             LocalDate today = LocalDate.now();
@@ -99,7 +102,7 @@ public class UserService {
         return age;
     }
 
-    private MemberDto getPhotos(MemberDto memberDto, User user) {
+    public Pair<List<PhotoDto>, String> getPhotos(User user) {
         List<PhotoDto> photoDtoList = new ArrayList<>();
         String mainPhotoUrl = "";
         for (Photo photo : user.getPhotos()) {
@@ -109,10 +112,7 @@ public class UserService {
             }
             photoDtoList.add(photoDto);
         }
-        memberDto.setPhotoUrl(mainPhotoUrl);
-        memberDto.setPhotos(photoDtoList);
-
-        return memberDto;
+        return new Pair<>(photoDtoList,mainPhotoUrl);
     }
 
     public void updateUser(MemberUpdateDto memberUpdateDto) {
@@ -203,6 +203,7 @@ public class UserService {
         logger.debug("Photo has deleted");
         return new ResponseEntity<>(OK);
     }
+
 
 
 }

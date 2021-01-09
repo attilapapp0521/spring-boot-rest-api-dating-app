@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
+
     @Query("SELECT p FROM Photo p WHERE p.id = :id")
     Photo getById(@Param("id") Long id);
 }
