@@ -42,6 +42,7 @@ public class AccountController {
         logger.debug("Login is in progress...");
         UserDto userDto = accountService.login(loginDto);
         logger.debug("Login is successful.");
+
         return new ResponseEntity<>(userDto,OK);
     }
 

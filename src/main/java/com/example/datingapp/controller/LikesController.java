@@ -28,7 +28,7 @@ public class LikesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LikeDto>> getUserLikes(String predicate, Pageable pageable){
+    public ResponseEntity<List<LikeDto>> getUserLikes(@RequestParam String predicate, Pageable pageable){
 
         Page<LikeDto> users = likesService.getUsersLikes(predicate, pageable);
         HttpHeaders httpHeaders = new HttpHeaders();

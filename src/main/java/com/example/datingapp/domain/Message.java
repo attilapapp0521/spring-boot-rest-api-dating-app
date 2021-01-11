@@ -20,6 +20,9 @@ public class Message {
     private boolean senderDeleted;
     private boolean recipientDeleted;
 
+    public Message() {
+    }
+
     public Message(User sender, User recipient, String content) {
         this.sender = sender;
         this.recipient = recipient;
