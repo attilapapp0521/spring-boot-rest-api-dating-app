@@ -32,6 +32,7 @@ public class UserController {
         this.userService = userService;
     }
 
+
     @GetMapping
     public ResponseEntity<List<MemberDto>> getUsers( UserParams userParams,
                                                      Pageable pageable) {

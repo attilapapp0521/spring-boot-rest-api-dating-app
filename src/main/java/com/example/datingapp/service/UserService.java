@@ -204,6 +204,10 @@ public class UserService {
         return new ResponseEntity<>(OK);
     }
 
+    public List<User> getAllUser(){
+        return userRepository.findAll();
+    }
+
 
 
 }

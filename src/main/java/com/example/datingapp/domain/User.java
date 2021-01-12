@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,9 +16,7 @@ public class User {
     private Long id;
     private String username;
     private String password;
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+
     private LocalDateTime dateOfBirth;
     private String knownAs;
     private LocalDateTime created;
@@ -28,6 +27,10 @@ public class User {
     private String interests;
     private String city;
     private String country;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "ROLES")
+    private List<Roles> roles = new ArrayList<>();
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties("user")
     private List<Photo> photos;
@@ -43,9 +46,8 @@ public class User {
     public User() {
     }
 
-    public User(RegisterDto registerDto, String encodedPassword, Role role) {
+    public User(RegisterDto registerDto, String encodedPassword) {
         this.username = registerDto.getUsername();
-        this.role = role;
         this.dateOfBirth = registerDto.getDateOfBirth();
         this.knownAs = registerDto.getKnownAs();
         this.created = LocalDateTime.now();
@@ -53,6 +55,7 @@ public class User {
         this.city = registerDto.getCity();
         this.country = registerDto.getCountry();
         this.password = encodedPassword;
+        this.roles.add(Roles.ROLE_USER);
     }
 
     public Long getId() {
@@ -79,13 +82,6 @@ public class User {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public LocalDateTime getDateOfBirth() {
         return dateOfBirth;
@@ -189,5 +185,29 @@ public class User {
 
     public void setLikedUser(List<UserLike> likedUser) {
         this.likedUser = likedUser;
+    }
+
+    public List<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
+    }
+
+    public List<Message> getMessageSent() {
+        return messageSent;
+    }
+
+    public void setMessageSent(List<Message> messageSent) {
+        this.messageSent = messageSent;
+    }
+
+    public List<Message> getMessageReceived() {
+        return messageReceived;
+    }
+
+    public void setMessageReceived(List<Message> messageReceived) {
+        this.messageReceived = messageReceived;
     }
 }
