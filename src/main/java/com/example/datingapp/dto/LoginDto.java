@@ -1,15 +1,9 @@
 package com.example.datingapp.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 
 public class LoginDto {
-    @NotNull(message = "The username cannot be null")
-    @NotBlank(message = "Username is mandatory")
     private String username;
-    @NotNull(message = "The password cannot be null" )
-    @NotBlank(message = "Password is mandatory")
     private String password;
 
     public String getUsername() {

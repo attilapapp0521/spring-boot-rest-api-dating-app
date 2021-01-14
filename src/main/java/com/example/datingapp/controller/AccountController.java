@@ -38,12 +38,9 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<UserDto> login(@RequestBody LoginDto loginDto) {
         logger.debug("Login is in progress...");
-        UserDto userDto = accountService.login(loginDto);
-        logger.debug("Login is successful.");
-
-        return new ResponseEntity<>(userDto,OK);
+        return accountService.login(loginDto);
     }
 
     private boolean userExists(String username) {

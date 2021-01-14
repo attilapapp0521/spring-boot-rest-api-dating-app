@@ -53,10 +53,10 @@ public class JwtProvider {
     private Map<String,Object> getClaimsFromUser(CustomUserDetails user) {
         List<String> authorities = new ArrayList<>();
         for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
-            authorities.add(grantedAuthority.getAuthority());
+            authorities.add(grantedAuthority.getAuthority().substring(5));
         }
         Map<String, Object> claims = new HashMap<>();
-       claims.put("authorities", authorities);
+       claims.put("roles", authorities);
        return claims;
     }
 }

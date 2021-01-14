@@ -6,12 +6,11 @@ import java.util.List;
 public class AdminDto {
     private Long id;
     private String username;
-    private List roles;
+    private List<String> roles;
 
     public AdminDto(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.roles = user.getRoles();
     }
 
     public Long getId() {

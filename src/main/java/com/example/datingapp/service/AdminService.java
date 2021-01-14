@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,9 +30,16 @@ public class AdminService {
 
 
     public List<AdminDto> getUsersWithRoles() {
-        return userService.getAllUser().stream()
-                .map(AdminDto::new).collect(Collectors.toList());
+        List<User> users = userService.getAllUser();
+        List<AdminDto> adminDtoList = new ArrayList<>();
 
+        for(User user : users){
+            AdminDto adminDto = new AdminDto(user);
+            adminDto.setRoles(user.getRoles().stream().map(Enum::toString).map(role -> role.substring(5))
+                    .collect(Collectors.toList()));
+            adminDtoList.add(adminDto);
+        }
+        return adminDtoList;
     }
     public ResponseEntity<Void> editRoles(String username, String roles) {
         User user = userService.findUserByUsername(username);
@@ -39,6 +47,8 @@ public class AdminService {
 
         if(user == null){
             return new ResponseEntity<>(NOT_FOUND);
+        }else if(roles.isEmpty()){
+            return new ResponseEntity("At least one role must be assigned",BAD_REQUEST);
         }
 
 

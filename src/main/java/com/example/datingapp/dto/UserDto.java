@@ -15,6 +15,7 @@ public class UserDto {
         this.token = token;
         this.knownAs = user.getKnownAs();
         this.gender = user.getGender();
+
     }
 
     public String getUsername() {
@@ -56,4 +57,5 @@ public class UserDto {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
 }
