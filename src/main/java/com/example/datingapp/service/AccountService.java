@@ -4,12 +4,12 @@ import com.example.datingapp.domain.User;
 import com.example.datingapp.dto.LoginDto;
 import com.example.datingapp.dto.RegisterDto;
 import com.example.datingapp.dto.UserDto;
+import com.example.datingapp.helpers.Pair;
 import com.example.datingapp.jwt.JwtProvider;
 import com.example.datingapp.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,15 @@ import static org.springframework.http.HttpStatus.*;
 @Transactional
 public class AccountService {
     private final UserRepository userRepository;
+    private UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public AccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AccountService(UserRepository userRepository, UserService userService, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.userRepository = userRepository;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
 
@@ -43,8 +45,10 @@ public class AccountService {
         String encodedPassword = passwordEncoder.encode(registerDto.getPassword());
         User user = new User(registerDto, encodedPassword);
 
+        user.setLastActive(LocalDateTime.now());
         saveUser(user);
         logger.debug("New user (username: " + user.getUsername() + ") saved in database.");
+
     }
 
     public void saveUser(User user) {
@@ -62,18 +66,14 @@ public class AccountService {
         }
 
         String token = jwtProvider.generateToken(user);
-        loggedEntry(loginDto.getUsername());
+        user.setLastActive(LocalDateTime.now());
+        UserDto userDto = new UserDto(user, token);
+        userDto.setPhotoUrl((String) userService.getPhotos(user).getSecond());
         logger.debug("Login is successful.");
 
-        return new ResponseEntity<>(new UserDto(user, token), OK);
+        return new ResponseEntity<>(userDto, OK);
     }
 
-    private void loggedEntry(String username) {
-        User user = userRepository.getUserByUsername(username);
-        if (user != null) {
-            user.setLastActive(LocalDateTime.now());
-        }
 
-    }
 
 }

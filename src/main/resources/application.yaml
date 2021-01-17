@@ -25,9 +25,9 @@ logging:
     org.springframework.security.web: info
     org.hibernate: error
 
-cloud.cloud_name:
-cloud.api_key:
-cloud.api_secret:
+cloud.cloud_name: dwhzipyci
+cloud.api_key: 761315847795885
+cloud.api_secret: YGDsjH8TQegI8J_AXNxaQJRLlgM
 
 
 

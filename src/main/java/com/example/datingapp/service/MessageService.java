@@ -85,13 +85,9 @@ public class MessageService {
         String currentUsername = userService.getAuthenticatedUserName();
         setReadMessages(currentUsername);
 
-       List<MessageDto> messageDtoList = new ArrayList<>();
        List<Message> messages = messageRepository.getMessageThread(currentUsername,recipientUsername);
-        for(Message message : messages){
-            messageDtoList.add(new MessageDto(message));
-        }
-
-        return messageDtoList;
+       return messages.stream()
+               .map(this::getMessageDto).collect(Collectors.toList());
     }
 
     private void setReadMessages(String username){

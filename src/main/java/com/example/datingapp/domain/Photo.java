@@ -10,7 +10,7 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
-    private Boolean isMain;
+    private boolean isMain;
     private String publicId;
     @ManyToOne
     @JsonIgnoreProperties("photo")
@@ -43,11 +43,11 @@ public class Photo {
         this.url = url;
     }
 
-    public Boolean getMain() {
+    public boolean isMain() {
         return isMain;
     }
 
-    public void setMain(Boolean main) {
+    public void setMain(boolean main) {
         isMain = main;
     }
 

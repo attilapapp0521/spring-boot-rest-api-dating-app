@@ -107,7 +107,7 @@ public class UserService {
         String mainPhotoUrl = "";
         for (Photo photo : user.getPhotos()) {
             PhotoDto photoDto = new PhotoDto(photo);
-            if (photo.getMain()) {
+            if (photo.isMain()) {
                 mainPhotoUrl = photo.getUrl();
             }
             photoDtoList.add(photoDto);
@@ -166,7 +166,7 @@ public class UserService {
         }
         User user = photo.getUser();
         for (Photo newPhoto : user.getPhotos()) {
-            if (newPhoto.getMain()) {
+            if (newPhoto.isMain()) {
                 if (newPhoto.getId().equals(photoId)) {
                     logger.warn("Failed: This is the main photo");
                     return false;
@@ -187,7 +187,7 @@ public class UserService {
         if (photo == null) {
             logger.warn("Failed: not found photo");
             return new ResponseEntity<>(NOT_FOUND);
-        } else if (photo.getMain()) {
+        } else if (photo.isMain()) {
             logger.warn("Failed: main photo deleting");
             return new ResponseEntity("You cannot delete your main photo",
                     BAD_REQUEST);

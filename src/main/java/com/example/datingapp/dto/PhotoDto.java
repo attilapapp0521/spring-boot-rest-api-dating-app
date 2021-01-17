@@ -10,7 +10,7 @@ public class PhotoDto {
     public PhotoDto(Photo photo) {
         this.id = photo.getId();
         this.url = photo.getUrl();
-        this.isMain = photo.getMain();
+        this.isMain = photo.isMain();
     }
 
     public Long getId() {
