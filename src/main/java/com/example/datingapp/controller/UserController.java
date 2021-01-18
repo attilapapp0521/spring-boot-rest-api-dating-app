@@ -37,6 +37,11 @@ public class UserController {
     public ResponseEntity<List<MemberDto>> getUsers( UserParams userParams,
                                                      Pageable pageable) {
         logger.debug("Users reading of database");
+        if(userParams.getMinAge() < 18 || userParams.getMaxAge() > 120
+        || userParams.getMinAge() == null || userParams.getMaxAge() == null
+        || userParams.getMinAge() > 120 || userParams.getMaxAge() < 18){
+            return new ResponseEntity("The spectrum is between 18 and 120",BAD_REQUEST);
+        }
         Page<MemberDto> users = userService.getUsers(userParams, pageable);
         HttpHeaders responseHeaders = new HttpHeaders();
         HttpExtension.addPaginationHeader(responseHeaders,users.getNumber(),

@@ -55,7 +55,6 @@ public class User {
         this.city = registerDto.getCity();
         this.country = registerDto.getCountry();
         this.password = encodedPassword;
-        this.roles.add(Roles.ROLE_USER);
     }
 
     public Long getId() {

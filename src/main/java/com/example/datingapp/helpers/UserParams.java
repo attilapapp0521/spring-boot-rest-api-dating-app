@@ -4,8 +4,8 @@ package com.example.datingapp.helpers;
 public class UserParams {
     private String currentUserName;
     private String gender;
-    private int minAge = 18;
-    private int maxAge = 99;
+    private Integer minAge;
+    private Integer maxAge;
     private String orderBy;
 
 
@@ -26,19 +26,19 @@ public class UserParams {
         this.gender = gender;
     }
 
-    public int getMinAge() {
+    public Integer getMinAge() {
         return minAge;
     }
 
-    public void setMinAge(int minAge) {
+    public void setMinAge(Integer minAge) {
         this.minAge = minAge;
     }
 
-    public int getMaxAge() {
+    public Integer getMaxAge() {
         return maxAge;
     }
 
-    public void setMaxAge(int maxAga) {
+    public void setMaxAge(Integer maxAga) {
         this.maxAge = maxAga;
     }
 

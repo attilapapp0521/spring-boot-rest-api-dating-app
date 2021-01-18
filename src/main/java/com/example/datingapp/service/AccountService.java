@@ -1,5 +1,6 @@
 package com.example.datingapp.service;
 
+import com.example.datingapp.domain.Roles;
 import com.example.datingapp.domain.User;
 import com.example.datingapp.dto.LoginDto;
 import com.example.datingapp.dto.RegisterDto;
@@ -44,7 +45,11 @@ public class AccountService {
     public void register(RegisterDto registerDto) {
         String encodedPassword = passwordEncoder.encode(registerDto.getPassword());
         User user = new User(registerDto, encodedPassword);
-
+        if(user.getUsername().equals("admin")){
+            user.getRoles().add(Roles.ROLE_ADMIN);
+        }else {
+            user.getRoles().add(Roles.ROLE_USER);
+        }
         user.setLastActive(LocalDateTime.now());
         saveUser(user);
         logger.debug("New user (username: " + user.getUsername() + ") saved in database.");

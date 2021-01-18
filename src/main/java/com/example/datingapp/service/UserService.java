@@ -1,6 +1,7 @@
 package com.example.datingapp.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.datingapp.domain.Photo;
 import com.example.datingapp.domain.User;
@@ -141,7 +142,9 @@ public class UserService {
 
     public PhotoDto addPhoto(MultipartFile multipartFile) {
         try {
-            Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
+            Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
+                    ObjectUtils.asMap("transformation",
+                    new Transformation().height(500).width(500).crop("fill").gravity("face")));
             String[] result = new String[3];
             result[0] = (String) uploadResult.get("public_id");
             result[1] = (String) uploadResult.get("url");
